@@ -9,12 +9,28 @@ public class Preconditions {
 
     public static void checkNotNull(Object object, ErrorMessage errorMessage) {
         if (object == null) {
-            String message = errorMessage != null ? errorMessage.errorMessage() : "Value could not be null";
+            String message = errorMessage != null ? errorMessage.evaluate() : "Value could not be null";
             throw new NullPointerException(message);
         }
     }
 
+    public static void checkCondition(Condition condition) {
+        checkCondition(condition, null);
+    }
+
+    public static void checkCondition(Condition condition, ErrorMessage errorMessage) {
+        if (condition.evaluate()) {
+            String message = errorMessage != null ? errorMessage.evaluate() : "Condition not met";
+            throw new IllegalStateException(message);
+        }
+    }
+
+    public interface Condition {
+        boolean evaluate();
+    }
+
+
     public interface ErrorMessage {
-        @NonNull String errorMessage();
+        @NonNull String evaluate();
     }
 }

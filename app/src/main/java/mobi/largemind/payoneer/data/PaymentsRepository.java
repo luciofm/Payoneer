@@ -32,9 +32,7 @@ public class PaymentsRepository {
 
             @Override
             public void onFailure(Call<PaymentsResponse> call, Throwable t) {
-                if (!call.isCanceled()) {
-                    liveData.setValue(DataState.error(t));
-                }
+                liveData.setValue(DataState.error(t));
             }
         });
 

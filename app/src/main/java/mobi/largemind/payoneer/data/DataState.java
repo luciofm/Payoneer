@@ -1,5 +1,6 @@
 package mobi.largemind.payoneer.data;
 
+import static mobi.largemind.payoneer.util.Preconditions.checkCondition;
 import static mobi.largemind.payoneer.util.Preconditions.checkNotNull;
 
 import androidx.annotation.NonNull;
@@ -16,8 +17,10 @@ public class DataState<T> {
     @Nullable
     private Throwable throwable;
 
-    public DataState(@NonNull State state, @Nullable T data, @Nullable Throwable throwable) {
+    private DataState(@NonNull State state, @Nullable T data, @Nullable Throwable throwable) {
         checkNotNull(state, () -> "STATE should not be null");
+        checkCondition(() -> state == State.DATA && data == null, () -> "State.DATA could not have NULL data");
+        checkCondition(() -> state != State.ERROR && throwable != null, () -> "Only State.ERROR can have throwable");
         this.state = state;
         this.data = data;
         this.throwable = throwable;
@@ -42,12 +45,13 @@ public class DataState<T> {
 
     @NonNull
     public T getData() {
-        checkNotNull(data);
+        checkCondition(() -> state != State.DATA, () -> "Can't call getData() on ERROR or LOADING states");
         return data;
     }
 
     @Nullable
     public Throwable getThrowable() {
+        checkCondition(() -> state != State.ERROR, () -> "Can't call getThrowable() on LOADING or DATA states");
         return throwable;
     }
 
